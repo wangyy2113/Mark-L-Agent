@@ -1,0 +1,14 @@
+.env
+.env.bot
+mcp.json
+scripts/env.sh
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+data/
+audit.log
+permissions.json
+.claude/
+.idea/
+.playwright-mcp/

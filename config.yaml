@@ -1,0 +1,69 @@
+# Mark-L Agent deployment configuration.
+# Chat mode is always available as the default.
+# List additional agents to enable below.
+
+agents:
+  - dev
+  # - ops
+  - ask
+  - role
+
+# Default mode: "chat" (original behavior) or "role" (orchestrator)
+default_mode: role
+
+# Chat mode cost control (defaults: 0.50 USD, 30 turns)
+chat:
+ max_budget_usd: 50.00
+ max_turns: 30
+ compress_threshold: 80000       # input_tokens > threshold triggers context compression
+ compress_model: claude-haiku-4-5  # lightweight model for generating conversation summaries
+
+# Per-agent overrides (only budget/turns/model/session_ttl are overridable)
+agent_config:
+  dev:
+    max_budget_usd: 50.00
+    explore_max_turns: 20
+    max_turns: 40
+    model: opus
+  ask:
+    max_budget_usd: 50.00
+    max_turns: 40
+    model: sonnet
+  role:
+    max_budget_usd: 50.00
+    model: sonnet
+
+# Per-user daily cost limit (0 = unlimited)
+# daily_budget_usd: 0.0
+
+# Permission groups: define access tiers for different user roles.
+# Each group specifies: agents (which modes), tools (chat mode tool set), paths (file access).
+# Tool aliases: all, base (Read/Glob/Grep/WebSearch/WebFetch), dev (Write/Edit/Bash),
+#   feishu_read, feishu_write, feishu_all, lark_read, lark_write, lark_all
+permission_groups:
+  admin:
+    agents: [chat, dev, ask, ops, role]
+    tools: [all]
+    paths: []                    # empty = no restriction
+
+  developer:
+    agents: [chat, dev, ask, role]
+    tools: [base, dev, feishu_read, feishu_write, lark_read]
+    paths: []
+
+  member:
+    agents: [chat, ask, role]
+    tools: [base, feishu_read, lark_read]
+    paths: []
+
+# Logging: per-module log level configuration.
+# Global level can also be set via LOG_LEVEL env var.
+# Module names match Python logger hierarchy (agent, core.biz, core.runner, etc.)
+logging:
+  loggers:
+    agent: DEBUG
+    core.biz: DEBUG
+    # suppress noisy third-party loggers
+    websockets.client: WARNING
+    urllib3.connectionpool: WARNING
+    event_handler: DEBUG

@@ -1,0 +1,27 @@
+# Mark-L Agent — systemd service（通用版）
+#
+# 安装：
+#   sudo cp scripts/mark-l-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now mark-l-agent
+#
+# 按实际路径修改 WorkingDirectory 和 ExecStart。
+
+[Unit]
+Description=Mark-L Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mark-l-agent
+Group=mark-l-agent
+WorkingDirectory=/home/mark-l-agent/mark-l-agent
+ExecStart=/home/mark-l-agent/mark-l-agent/.venv/bin/python main.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
